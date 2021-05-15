@@ -1,3 +1,9 @@
+from kivy.app import App
+from kivy.uix.label import Label
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from random import choice
 
 # Все моды и вопросы к ним, и тексты историй
 
@@ -54,15 +60,7 @@ text_story5 = ['Стать известным на всю страну', '', '',
                'Он встал и стремительно', '', '.']
 
 
-f = open("slovar.txt", "r", encoding="ANSI")
-listone = [line.rstrip() for line in f]
-a = []
-b = []
-for i in listone:
-    a.append(i[0:i.find("?")+1])
-    b.append(i[i.find(":")+1:])
-slovar = dict(zip(a, b))
-print(slovar)
+
 slovar = {'кто/что?': ' Ричард Львиное Сердце', 'с кем/чем?': ' с Нурланом Сабуровым', 'как?': ' неожиданно',
           'что делали?': ' ждали рассвета, варили борщ', 'почему?': ' потому что иначе нельзя, потому что лаяли собаки',
           'что им сказали?': ' им сказали «идите спать»)', 'чем все закончилось?': ' всё закончилось индийским танцем)',
@@ -80,4 +78,39 @@ slovar = {'кто/что?': ' Ричард Львиное Сердце', 'с к�
           'каком виде транспорта?': ' автобусе', 'кем по профессии?': ' оценщиком запаха изо рта',
           'кому?': ' Ивану Урганту', 'когда?': ' после брачного периода сов', 'какую еду?': ' тушеные кабачки',
           'какой?': ' ироничный', 'за чем?': ' за раковиной', 'без чего?': ' без красных стрингов',
-          'что сделал?': ' уснул', '': ''}
+          'что сделал?': ' уснул'}
+
+
+class MyGrid(GridLayout):
+    def __init__(self, **kwargs):
+        super(MyGrid, self).__init__(**kwargs)
+        self.cols = 1
+
+        self.inside = GridLayout()
+        self.inside.cols = 1
+
+        self.questionLabel = Label(text=choice(list(slovar.keys())))
+        self.inside.add_widget(self.questionLabel)
+
+        self.input = TextInput(hint_text="Пример:"+slovar.get(self.questionLabel.text))
+        self.inside.add_widget(self.input)
+
+        self.add_widget(self.inside)
+
+        self.submit = Button(text="Далее")
+        self.submit.bind(on_press=self.pressed)
+        self.add_widget(self.submit)
+
+    def pressed(self, instance):
+        print(1)
+        self.questionLabel.text = choice(list(slovar.keys()))
+        self.input.hint_text = slovar.get(self.questionLabel.text)
+
+
+class MyApp(App):
+    def build(self):
+        return MyGrid()
+
+
+if __name__ == "__main__":
+    MyApp().run()
